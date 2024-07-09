@@ -761,12 +761,56 @@ defined('_JEXEC') or die('Restricted access');
 											this.value = 0;
 										}
 									} else if (braNumber >= 37 && braNumber <= 44) {
+										var quantityInputs = document.querySelectorAll('.hikashop_listing_quantity_field');
+
+										// Función para sumar las cantidades ingresadas
+										function sumQuantities() {
+											var sum = 0;
+											quantityInputs.forEach(function(input) {
+												sum += parseInt(input.value) || 0; // Sumar solo si es un número válido
+											});
+											return sum;
+										}
+
+										// Variable para controlar si ya se mostró la alerta de múltiplo de 10
+										var alertShown = false;
+
+										// Evento para validar al cambiar el valor en algún input de cantidad
+										quantityInputs.forEach(function(input) {
+											input.addEventListener('change', function() {
+												// Contar la cantidad de inputs con valores válidos
+												var validCount = 0;
+												quantityInputs.forEach(function(input) {
+													if (parseInt(input.value) >= 0) { // Considerar solo valores numéricos válidos
+														validCount++;
+													}
+												});
+
+												// Validar si hay al menos dos valores ingresados antes de verificar múltiplos de 10
+												if (validCount >= 2) {
+													var totalSum = sumQuantities();
+													if (totalSum % 10 !== 0) {
+														if (!alertShown) {
+															alert('La suma total de las cantidades debe ser un múltiplo de 10.');
+															alertShown = true; // Marcar que se mostró la alerta
+														}
+														// Puedes tomar medidas adicionales aquí, como reiniciar las cantidades
+													} else {
+														alertShown = false; // Reiniciar el control de alerta
+													}
+												} else {
+													alertShown = false; // Reiniciar el control de alerta si no hay suficientes valores
+												}
+											});
+										});
+
+										// Validación mínima y múltiplos de 5
 										if (isNaN(value) || value < 10) {
 											alert('Debe ingresar un valor mínimo de 10');
 											this.value = 10; // O podrías dejarlo vacío: this.value = '';
 										}
 										if (value % 5 !== 0) {
-											alert('Si desea que el costo del envío sea óptimo, entonces ingrese minimo 10. Sin embargo, se aceptan múltiplos de 5.');
+											alert('Si desea que el costo del envío sea óptimo, ingrese mínimo 10. Se aceptan múltiplos de 5.');
 											this.value = 0;
 										}
 									} else {
